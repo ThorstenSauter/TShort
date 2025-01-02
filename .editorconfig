@@ -228,6 +228,11 @@ dotnet_diagnostic.SA1633.severity = none
 [Program.cs]
 dotnet_diagnostic.CA1852.severity = none
 
+[IApiAssemblyMarker.cs]
+dotnet_diagnostic.CA1515.severity = none
+
+[*.Designer.cs]
+
 # C++ Files
 [*.{cpp,h,in}]
 curly_bracket_next_line = true

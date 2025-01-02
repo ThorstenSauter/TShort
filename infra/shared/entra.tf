@@ -7,10 +7,10 @@ locals {
 }
 
 resource "azuread_application_registration" "api" {
-  display_name                   = "TShort API"
-  description                    = "Used to authenticate to the TShort API"
-  sign_in_audience               = "AzureADMyOrg"
-  homepage_url                   = var.api_uri
+  display_name     = "TShort API"
+  description      = "Used to authenticate to the TShort API"
+  sign_in_audience = "AzureADMyOrg"
+  homepage_url     = var.api_uri
 }
 
 resource "azuread_service_principal" "api" {
@@ -46,10 +46,10 @@ resource "azuread_application_permission_scope" "api_access_as_user" {
 }
 
 resource "azuread_application_registration" "web" {
-  display_name                   = "TShort Webinterface"
-  description                    = "Used to administer the TShort service."
-  sign_in_audience               = "AzureADMyOrg"
-  homepage_url                   = var.web_uri
+  display_name     = "TShort Webinterface"
+  description      = "Used to administer the TShort service."
+  sign_in_audience = "AzureADMyOrg"
+  homepage_url     = var.web_uri
 }
 
 resource "azuread_service_principal" "web" {

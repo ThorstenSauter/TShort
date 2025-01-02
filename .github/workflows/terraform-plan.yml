@@ -29,7 +29,7 @@ jobs:
           infra-directory: ${{ vars.INFRA_DIRECTORY }}
 
   plan-shared:
-    name: Plan production environment
+    name: Plan shared environment
     runs-on: ubuntu-latest
     environment: shared
     env:
@@ -55,7 +55,7 @@ jobs:
           state-file: ${{ vars.TF_BACKEND_STATE_FILE_NAME }}
 
   plan-staging:
-    name: Plan production environment
+    name: Plan staging environment
     runs-on: ubuntu-latest
     environment: staging
     env:
@@ -64,6 +64,7 @@ jobs:
       ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       ARM_USE_AZUREAD: true
       ARM_USE_OIDC: true
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       ENVIRONMENT_NAME: Staging
     steps:
       - name: Checkout repository
@@ -90,6 +91,7 @@ jobs:
       ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       ARM_USE_AZUREAD: true
       ARM_USE_OIDC: true
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       ENVIRONMENT_NAME: Production
     steps:
       - name: Checkout repository

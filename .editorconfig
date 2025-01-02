@@ -228,9 +228,10 @@ dotnet_diagnostic.SA1633.severity = none
 [Program.cs]
 dotnet_diagnostic.CA1852.severity = none
 
-[EnumerableExtensions.cs]
-# S127: Do not update the loop counter within the loop body
-dotnet_diagnostic.S127.severity = none
+[IApiAssemblyMarker.cs]
+dotnet_diagnostic.CA1515.severity = none
+
+[*.Designer.cs]
 
 # C++ Files
 [*.{cpp,h,in}]

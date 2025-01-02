@@ -38,6 +38,7 @@ jobs:
           state-file: ${{ vars.TF_BACKEND_STATE_FILE_NAME }}
       - name: Get Terraform outputs
         id: terraform-outputs
+        working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
         run: echo "registry-name=$(terraform output -raw registry_name)" >> "$GITHUB_OUTPUT"
 
   build:

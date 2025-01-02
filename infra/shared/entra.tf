@@ -1,6 +1,7 @@
 locals {
   web_redirect_uris = [
     "https://admin.tshort.me/authentication/login-callback",
+    "https://staging.admin.tshort.me/authentication/login-callback",
     "http://localhost:5010/authentication/login-callback",
     "https://localhost:7045/authentication/login-callback"
   ]

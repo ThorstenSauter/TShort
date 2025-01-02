@@ -17,9 +17,3 @@ resource "azurerm_container_registry" "main" {
   admin_enabled       = false
   tags                = var.tags
 }
-
-resource "azurerm_role_assignment" "acr_push" {
-  scope                = azurerm_container_registry.main.id
-  principal_id         = data.azurerm_client_config.current.object_id
-  role_definition_name = "AcrPush"
-}

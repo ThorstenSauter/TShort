@@ -2,4 +2,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TShort.Api\TShort.Api.csproj"/>
+  </ItemGroup>
 </Project>

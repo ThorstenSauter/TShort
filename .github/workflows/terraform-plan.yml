@@ -29,7 +29,7 @@ jobs:
           infra-directory: ${{ vars.INFRA_DIRECTORY }}
 
   plan-shared:
-    name: Plan production environment
+    name: Plan shared environment
     runs-on: ubuntu-latest
     environment: shared
     env:
@@ -55,7 +55,7 @@ jobs:
           state-file: ${{ vars.TF_BACKEND_STATE_FILE_NAME }}
 
   plan-staging:
-    name: Plan production environment
+    name: Plan staging environment
     runs-on: ubuntu-latest
     environment: staging
     env:

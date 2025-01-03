@@ -107,7 +107,7 @@ resource "cloudflare_record" "api" {
   zone_id = data.cloudflare_zone.main.zone_id
   name    = local.api_custom_domain_is_apex ? var.dns_zone : var.api_custom_domain
   type    = "CNAME"
-  content = azurerm_container_app.api.ingress.fqdn[0]
+  content = azurerm_container_app.api.ingress[0].fqdn
   comment = "Custom domain for the ${local.app_name} API ${var.env} environment"
 }
 

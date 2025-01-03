@@ -1,12 +1,17 @@
 locals {
+  api_container_app_name         = "aca-${local.app_name}-api-${var.env}-${var.location}-${var.resource_id}"
+  api_custom_domain_is_apex      = var.api_custom_domain == "@"
   application_insights_name      = "appi-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
   container_app_environment_name = "cae-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
-  log_analytics_workspace_name   = "log-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
-  user_assigned_identity_name    = "id-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
-  container_registry_server      = split("/", var.api_container_image_name)[0]
   container_registry_name        = split(".", local.container_registry_server)[0]
-  api_custom_domain_is_apex      = var.api_custom_domain == "@"
-  full_api_custom_domain         = local.api_custom_domain_is_apex ? var.dns_zone : "${var.api_custom_domain}.${var.dns_zone}"
+  container_registry_server      = split("/", var.api_container_image_name)[0]
+  full_api_custom_domain = (
+    local.api_custom_domain_is_apex
+    ? var.dns_zone
+    : "${var.api_custom_domain}.${var.dns_zone}"
+  )
+  log_analytics_workspace_name = "log-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
+  user_assigned_identity_name  = "id-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
 }
 
 data "azurerm_container_registry" "main" {
@@ -35,6 +40,7 @@ resource "azurerm_user_assigned_identity" "api" {
   name                = local.user_assigned_identity_name
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
+  tags                = var.tags
 }
 
 resource "azurerm_role_assignment" "api_acr_pull" {
@@ -56,7 +62,7 @@ resource "azurerm_container_app_environment" "main" {
 }
 
 resource "azurerm_container_app" "api" {
-  name                         = "${local.app_name}-api"
+  name                         = local.api_container_app_name
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
@@ -91,6 +97,7 @@ resource "azurerm_container_app" "api" {
       }
     }
   }
+  tags = var.tags
   depends_on = [
     azurerm_role_assignment.api_acr_pull
   ]

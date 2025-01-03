@@ -66,6 +66,7 @@ resource "azurerm_container_app" "api" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
   identity {
     type = "UserAssigned"
     identity_ids = [
@@ -118,7 +119,7 @@ resource "cloudflare_record" "api" {
   content = (
     local.api_custom_domain_is_apex
     ? azurerm_container_app_environment.main.static_ip_address
-    : "${azurerm_container_app.api.name}.${azurerm_container_app_environment.main.default_domain}"
+    : azurerm_container_app.api.ingress.0.fqdn
   )
   comment = "Custom domain for the ${local.app_name} API ${var.env} environment"
 }
@@ -141,5 +142,61 @@ resource "azurerm_container_app_custom_domain" "api" {
     ignore_changes = [
       certificate_binding_type, container_app_environment_certificate_id
     ]
+  }
+}
+
+resource "azapi_resource" "managed_certificate" {
+  depends_on = [time_sleep.api_custom_domain_records]
+  type       = "Microsoft.App/managedEnvironments/managedCertificates@2024-03-01"
+  name       = local.api_container_app_name
+  parent_id  = azurerm_container_app_environment.main.id
+  location   = azurerm_container_app_environment.main.location
+
+  body = {
+    properties = {
+      subjectName             = azurerm_container_app_custom_domain.api.name
+      domainControlValidation = local.api_custom_domain_is_apex ? "TXT" : "CNAME"
+    }
+  }
+
+  response_export_values = ["*"]
+}
+
+resource "azapi_resource_action" "apply_custom_domain_binding" {
+  resource_id = azurerm_container_app.api.id
+  when        = "apply"
+  type        = "Microsoft.App/containerApps@2024-03-01"
+  method      = "PATCH"
+  body = {
+    properties = {
+      configuration = {
+        ingress = {
+          customDomains = [
+            {
+              bindingType   = "SniEnabled",
+              name          = azurerm_container_app_custom_domain.api.name,
+              certificateId = azapi_resource.managed_certificate.output.id
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+
+resource "azapi_resource_action" "destroy_custom_domain_binding" {
+  depends_on  = [azurerm_container_app_custom_domain.api]
+  when        = "destroy"
+  resource_id = azurerm_container_app.api.id
+  type        = "Microsoft.App/containerApps@2024-03-01"
+  method      = "PATCH"
+  body = {
+    properties = {
+      configuration = {
+        ingress = {
+          customDomains = []
+        }
+      }
+    }
   }
 }

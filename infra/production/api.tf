@@ -155,7 +155,7 @@ resource "azapi_resource" "managed_certificate" {
   body = {
     properties = {
       subjectName             = azurerm_container_app_custom_domain.api.name
-      domainControlValidation = local.api_custom_domain_is_apex ? "TXT" : "CNAME"
+      domainControlValidation = local.api_custom_domain_is_apex ? "HTTP" : "CNAME"
     }
   }
 

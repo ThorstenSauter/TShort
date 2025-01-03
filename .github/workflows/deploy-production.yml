@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   shared-terraform-outputs:
-    name: Get container registry name
+    name: Get Terraform outputs for shared environment
     runs-on: ubuntu-latest
     environment: shared
     outputs:

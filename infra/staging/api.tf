@@ -1,0 +1,118 @@
+locals {
+  application_insights_name      = "appi-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
+  container_app_environment_name = "cae-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
+  log_analytics_workspace_name   = "log-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
+  user_assigned_identity_name    = "id-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
+  container_registry_server      = split("/", var.api_container_image_name)[0]
+  api_custom_domain_is_apex      = var.api_custom_domain == "@"
+  full_api_custom_domain         = local.api_custom_domain_is_apex ? var.dns_zone : "${var.api_custom_domain}.${var.dns_zone}"
+}
+
+resource "azurerm_log_analytics_workspace" "main" {
+  name                = local.log_analytics_workspace_name
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+  tags                = var.tags
+}
+
+resource "azurerm_application_insights" "main" {
+  name                = local.application_insights_name
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+  application_type    = "web"
+  tags                = var.tags
+}
+
+resource "azurerm_user_assigned_identity" "api" {
+  name                = local.user_assigned_identity_name
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+}
+
+resource "azurerm_container_app_environment" "main" {
+  name                       = local.container_app_environment_name
+  resource_group_name        = azurerm_resource_group.main.name
+  location                   = azurerm_resource_group.main.location
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+  workload_profile {
+    name                  = "Consumption"
+    workload_profile_type = "Consumption"
+  }
+  tags = var.tags
+}
+
+resource "azurerm_container_app" "api" {
+  name                         = "example-app"
+  container_app_environment_id = azurerm_container_app_environment.main.id
+  resource_group_name          = azurerm_resource_group.main.name
+  revision_mode                = "Single"
+  identity {
+    type = "UserAssigned"
+    identity_ids = [
+      azurerm_user_assigned_identity.api.id
+    ]
+  }
+  ingress {
+    allow_insecure_connections = false
+    external_enabled           = true
+    target_port                = 8080
+    traffic_weight {
+      percentage = 100
+    }
+  }
+  registry {
+    server   = local.container_registry_server
+    identity = azurerm_user_assigned_identity.api.id
+  }
+  template {
+    container {
+      name   = "${local.app_name}-api"
+      image  = var.api_container_image_name
+      cpu    = 0.25
+      memory = "0.5Gi"
+      env {
+        name  = "APPLICATIONINSIGHTS_CONNECTION_STRING"
+        value = azurerm_application_insights.main.connection_string
+      }
+    }
+  }
+}
+
+resource "cloudflare_record" "asuid_api" {
+  zone_id = data.cloudflare_zone.main.zone_id
+  name    = local.api_custom_domain_is_apex ? "asuid" : "asuid.${var.api_custom_domain}"
+  type    = "TXT"
+  content = azurerm_container_app.api.custom_domain_verification_id
+  comment = "Azure custom domain verification id"
+}
+
+resource "cloudflare_record" "api" {
+  zone_id = data.cloudflare_zone.main.zone_id
+  name    = local.api_custom_domain_is_apex ? var.dns_zone : var.api_custom_domain
+  type    = "CNAME"
+  content = azurerm_container_app.api.ingress.fqdn
+  comment = "Custom domain for the ${local.app_name} API ${var.env} environment"
+}
+
+resource "time_sleep" "api_custom_domain_records" {
+  create_duration = "2m"
+  depends_on = [
+    cloudflare_record.asuid_api,
+    cloudflare_record.api
+  ]
+}
+
+resource "azurerm_container_app_custom_domain" "api" {
+  name             = local.full_api_custom_domain
+  container_app_id = azurerm_container_app.api.id
+  depends_on = [
+    time_sleep.api_custom_domain_records
+  ]
+  lifecycle {
+    ignore_changes = [
+      certificate_binding_type, container_app_environment_certificate_id
+    ]
+  }
+}

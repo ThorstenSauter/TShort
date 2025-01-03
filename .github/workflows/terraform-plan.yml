@@ -32,6 +32,8 @@ jobs:
     name: Plan shared environment
     runs-on: ubuntu-latest
     environment: shared
+    outputs:
+        registry-name: ${{ steps.terraform-outputs.outputs.registry-name }}
     env:
       ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -53,11 +55,17 @@ jobs:
           storage-account: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT_NAME }}
           container: ${{ vars.TF_BACKEND_STATE_CONTAINER_NAME }}
           state-file: ${{ vars.TF_BACKEND_STATE_FILE_NAME }}
+      - name: Retrieve Terraform outputs
+        id: terraform-outputs
+        working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
+        run: echo "registry-name=$(terraform output -raw registry_name)" >> "$GITHUB_OUTPUT"
 
   plan-staging:
     name: Plan staging environment
     runs-on: ubuntu-latest
     environment: staging
+    needs:
+      - plan-shared
     env:
       ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -66,6 +74,7 @@ jobs:
       ARM_USE_OIDC: true
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       ENVIRONMENT_NAME: Staging
+      TF_VAR_api_container_image_name: "${{ needs.plan-shared.outputs.registry-name }}.azurecr.io/placeholder"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -85,6 +94,8 @@ jobs:
     name: Plan production environment
     runs-on: ubuntu-latest
     environment: production
+    needs:
+      - plan-shared
     env:
       ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -93,6 +104,7 @@ jobs:
       ARM_USE_OIDC: true
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       ENVIRONMENT_NAME: Production
+      TF_VAR_api_container_image_name: "${{ needs.plan-shared.outputs.registry-name }}.azurecr.io/placeholder"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

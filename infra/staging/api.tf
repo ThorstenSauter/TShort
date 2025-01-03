@@ -56,7 +56,7 @@ resource "azurerm_container_app_environment" "main" {
 }
 
 resource "azurerm_container_app" "api" {
-  name                         = "example-app"
+  name                         = "${local.app_name}-api"
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
@@ -71,7 +71,8 @@ resource "azurerm_container_app" "api" {
     external_enabled           = true
     target_port                = 8080
     traffic_weight {
-      percentage = 100
+      percentage      = 100
+      latest_revision = true
     }
   }
   registry {

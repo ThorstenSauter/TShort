@@ -1,5 +1,5 @@
 locals {
-  api_container_app_name         = "aca-${local.app_name}-api-${var.env}-${var.location}-${var.resource_id}"
+  api_container_app_name         = "aca-${local.app_name}-api-${var.env}-${var.resource_id}"
   api_custom_domain_is_apex      = var.api_custom_domain == "@"
   application_insights_name      = "appi-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
   container_app_environment_name = "cae-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"

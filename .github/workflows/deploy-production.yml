@@ -58,7 +58,7 @@ jobs:
     env:
       IMAGE_TAG: ${{ github.event.release.tag_name }}
       PROJECT_PATH: 'src/TShort.Api/TShort.Api.csproj'
-      REGISTRY_NAME: ${{ needs.container-registry-name.outputs.registry-name }}
+      REGISTRY_NAME: ${{ needs.shared-terraform-outputs.outputs.registry-name }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

@@ -8,6 +8,11 @@ variable "api_custom_domain" {
   description = "The custom domain for the API. Should only contain the subdomain or an '@' for the apex domain."
 }
 
+variable "container_registry_resource_group" {
+  type        = string
+  description = "The name of the resource group where the container registry is deployed."
+}
+
 variable "dns_zone" {
   type        = string
   description = "The DNS zone for the custom domains."

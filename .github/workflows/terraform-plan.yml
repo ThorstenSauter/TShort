@@ -34,6 +34,7 @@ jobs:
     environment: shared
     outputs:
         registry-name: ${{ steps.terraform-outputs.outputs.registry-name }}
+        resource-group-name: ${{ steps.terraform-outputs.outputs.resource-group-name }}
     env:
       ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -58,7 +59,9 @@ jobs:
       - name: Retrieve Terraform outputs
         id: terraform-outputs
         working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
-        run: echo "registry-name=$(terraform output -raw registry_name)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "registry-name=$(terraform output -raw registry_name)" >> "$GITHUB_OUTPUT"
+          echo "resource-group-name=$(terraform output -raw resource_group_name)" >> "$GITHUB_OUTPUT"
 
   plan-staging:
     name: Plan staging environment
@@ -75,6 +78,7 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       ENVIRONMENT_NAME: Staging
       TF_VAR_api_container_image_name: "${{ needs.plan-shared.outputs.registry-name }}.azurecr.io/placeholder"
+      TF_VAR_container_registry_resource_group: ${{ needs.plan-shared.outputs.resource-group-name }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -105,6 +109,7 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       ENVIRONMENT_NAME: Production
       TF_VAR_api_container_image_name: "${{ needs.plan-shared.outputs.registry-name }}.azurecr.io/placeholder"
+      TF_VAR_container_registry_resource_group: ${{ needs.plan-shared.outputs.resource-group-name }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

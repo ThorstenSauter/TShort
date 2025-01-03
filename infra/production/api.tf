@@ -4,8 +4,14 @@ locals {
   log_analytics_workspace_name   = "log-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
   user_assigned_identity_name    = "id-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
   container_registry_server      = split("/", var.api_container_image_name)[0]
+  container_registry_name        = split(".", local.container_registry_server)[0]
   api_custom_domain_is_apex      = var.api_custom_domain == "@"
   full_api_custom_domain         = local.api_custom_domain_is_apex ? var.dns_zone : "${var.api_custom_domain}.${var.dns_zone}"
+}
+
+data "azurerm_container_registry" "main" {
+  name                = local.container_registry_name
+  resource_group_name = var.container_registry_resource_group
 }
 
 resource "azurerm_log_analytics_workspace" "main" {
@@ -29,6 +35,12 @@ resource "azurerm_user_assigned_identity" "api" {
   name                = local.user_assigned_identity_name
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
+}
+
+resource "azurerm_role_assignment" "api_acr_pull" {
+  principal_id         = azurerm_user_assigned_identity.api.principal_id
+  scope                = data.azurerm_container_registry.main.id
+  role_definition_name = "AcrPull"
 }
 
 resource "azurerm_container_app_environment" "main" {
@@ -63,7 +75,7 @@ resource "azurerm_container_app" "api" {
     }
   }
   registry {
-    server   = local.container_registry_server
+    server   = data.azurerm_container_registry.main.login_server
     identity = azurerm_user_assigned_identity.api.id
   }
   template {
@@ -78,6 +90,9 @@ resource "azurerm_container_app" "api" {
       }
     }
   }
+  depends_on = [
+    azurerm_role_assignment.api_acr_pull
+  ]
 }
 
 resource "cloudflare_record" "asuid_api" {

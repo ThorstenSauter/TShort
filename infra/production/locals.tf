@@ -1,1 +1,3 @@
-locals {}
+locals {
+  app_name = "tshort"
+}

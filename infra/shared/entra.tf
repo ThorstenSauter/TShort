@@ -46,6 +46,30 @@ resource "azuread_application_permission_scope" "api_access_as_user" {
   user_consent_display_name = "Access API as user"
 }
 
+resource "random_uuid" "administrator_role_id" {}
+
+resource "azuread_application_app_role" "example_administer" {
+  application_id = azuread_application_registration.api.id
+  role_id        = random_uuid.administrator_role_id.id
+
+  allowed_member_types = ["User"]
+  description  = "Allows most administrative tasks to be performed."
+  display_name = "Administrator"
+  value        = "Administrator"
+}
+
+resource "random_uuid" "superadministrator_role_id" {}
+
+resource "azuread_application_app_role" "example_administer" {
+  application_id = azuread_application_registration.api.id
+  role_id        = random_uuid.superadministrator_role_id.id
+
+  allowed_member_types = ["User"]
+  description  = "Allows all administrative tasks to be performed."
+  display_name = "Superadministrator"
+  value        = "Superadministrator"
+}
+
 resource "azuread_application_registration" "web" {
   display_name     = "TShort Webinterface"
   description      = "Used to administer the TShort service."

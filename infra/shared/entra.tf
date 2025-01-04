@@ -53,9 +53,9 @@ resource "azuread_application_app_role" "example_administer" {
   role_id        = random_uuid.administrator_role_id.id
 
   allowed_member_types = ["User"]
-  description  = "Allows most administrative tasks to be performed."
-  display_name = "Administrator"
-  value        = "Administrator"
+  description          = "Allows most administrative tasks to be performed."
+  display_name         = "Administrator"
+  value                = "Administrator"
 }
 
 resource "random_uuid" "superadministrator_role_id" {}
@@ -65,9 +65,9 @@ resource "azuread_application_app_role" "example_administer" {
   role_id        = random_uuid.superadministrator_role_id.id
 
   allowed_member_types = ["User"]
-  description  = "Allows all administrative tasks to be performed."
-  display_name = "Superadministrator"
-  value        = "Superadministrator"
+  description          = "Allows all administrative tasks to be performed."
+  display_name         = "Superadministrator"
+  value                = "Superadministrator"
 }
 
 resource "azuread_application_registration" "web" {

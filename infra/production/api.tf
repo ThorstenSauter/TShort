@@ -130,18 +130,16 @@ resource "cloudflare_record" "api" {
 
 resource "time_sleep" "api_custom_domain_records" {
   create_duration = "2m"
-  depends_on = [
-    cloudflare_record.asuid_api,
-    cloudflare_record.api
-  ]
+  triggers = {
+    record           = "${cloudflare_record.api.name}.${var.dns_zone}"
+    verification_id  = cloudflare_record.asuid_api.content
+    container_app_id = azurerm_container_app.api.id
+  }
 }
 
 resource "azurerm_container_app_custom_domain" "api" {
   name             = local.full_api_custom_domain
-  container_app_id = azurerm_container_app.api.id
-  depends_on = [
-    time_sleep.api_custom_domain_records
-  ]
+  container_app_id = time_sleep.api_custom_domain_records.triggers["container_app_id"]
   lifecycle {
     ignore_changes = [
       certificate_binding_type, container_app_environment_certificate_id

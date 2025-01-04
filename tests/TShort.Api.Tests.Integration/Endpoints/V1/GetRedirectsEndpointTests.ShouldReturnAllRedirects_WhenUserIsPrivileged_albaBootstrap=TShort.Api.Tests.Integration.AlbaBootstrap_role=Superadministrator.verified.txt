@@ -1,0 +1,14 @@
+﻿{
+  Redirects: [
+    {
+      ShortName: google,
+      RedirectTo: https://www.google.com,
+      CreatedBy: Guid_1
+    },
+    {
+      ShortName: tshort,
+      RedirectTo: https://www.tshort.me,
+      CreatedBy: Guid_2
+    }
+  ]
+}

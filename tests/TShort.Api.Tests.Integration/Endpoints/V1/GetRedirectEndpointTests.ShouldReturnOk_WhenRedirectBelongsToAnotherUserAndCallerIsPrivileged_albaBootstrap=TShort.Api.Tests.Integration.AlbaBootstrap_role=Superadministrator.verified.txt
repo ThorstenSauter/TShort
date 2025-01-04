@@ -1,0 +1,5 @@
+﻿{
+  ShortName: google,
+  RedirectTo: https://www.google.com,
+  CreatedBy: Guid_1
+}

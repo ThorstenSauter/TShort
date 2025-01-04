@@ -1,9 +1,35 @@
-var builder = WebApplication.CreateBuilder(args);
+using FastEndpoints;
+using TShort.Api;
+using TShort.Api.Data;
 
-builder.AddServiceDefaults();
+using var loggerFactory = LoggerFactory.Create(static builder => builder.AddConsole());
+var bootStrapLogger = loggerFactory.CreateLogger<Program>();
 
-var app = builder.Build();
+try
+{
+    var builder = WebApplication.CreateBuilder(args);
 
-app.MapGet("/", () => "Hello World!");
+    builder.AddServiceDefaults();
+    builder.AddSqlServerDbContext<AppDbContext>("tshort");
 
-await app.RunAsync();
+    builder.Services
+        .AddApplicationServices()
+        .AddMicrosoftIdentityPlatform(builder.Configuration)
+        .ConfigureEndpoints();
+
+    var app = builder.Build();
+
+    if (app.Environment.IsDevelopment())
+    {
+        await MigrationRunner<AppDbContext>.RunAsync(app);
+    }
+
+    app.MapDefaultEndpoints();
+    app.UseFastEndpoints(static c => c.Errors.UseProblemDetails());
+
+    await app.RunAsync();
+}
+catch (Exception ex)
+{
+    bootStrapLogger.LogCritical(ex, "The application shut down unexpectedly");
+}

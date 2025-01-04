@@ -1,0 +1,11 @@
+﻿{
+  Title: Bad Request,
+  Instance: /api/redirects,
+  TraceId: {Scrubbed},
+  Errors: [
+    {
+      Name: shortName,
+      Reason: The short name is already in use
+    }
+  ]
+}

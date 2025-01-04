@@ -1,0 +1,9 @@
+﻿{
+  Redirects: [
+    {
+      ShortName: tshort,
+      RedirectTo: https://www.tshort.me,
+      CreatedBy: Guid_1
+    }
+  ]
+}

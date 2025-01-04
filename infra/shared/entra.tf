@@ -48,7 +48,7 @@ resource "azuread_application_permission_scope" "api_access_as_user" {
 
 resource "random_uuid" "administrator_role_id" {}
 
-resource "azuread_application_app_role" "example_administer" {
+resource "azuread_application_app_role" "api_administrator" {
   application_id = azuread_application_registration.api.id
   role_id        = random_uuid.administrator_role_id.id
 
@@ -60,7 +60,7 @@ resource "azuread_application_app_role" "example_administer" {
 
 resource "random_uuid" "superadministrator_role_id" {}
 
-resource "azuread_application_app_role" "example_administer" {
+resource "azuread_application_app_role" "api_superadministrator" {
   application_id = azuread_application_registration.api.id
   role_id        = random_uuid.superadministrator_role_id.id
 

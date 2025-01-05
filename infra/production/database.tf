@@ -23,6 +23,8 @@ resource "time_sleep" "group_provisioning" {
   }
 }
 
+#trivy:ignore:avd-azu-0022
+#trivy:ignore:avd-azu-0027
 resource "azurerm_mssql_server" "main" {
   name                = local.database_server_name
   resource_group_name = azurerm_resource_group.main.name

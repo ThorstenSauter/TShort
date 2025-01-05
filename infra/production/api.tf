@@ -86,6 +86,10 @@ resource "azurerm_container_app" "api" {
     server   = data.azurerm_container_registry.main.login_server
     identity = azurerm_user_assigned_identity.api.id
   }
+  secret {
+    name  = "entra-id-client-secret"
+    value = var.entra_id_client_secret
+  }
   template {
     container {
       name   = "${local.app_name}-api"
@@ -99,6 +103,10 @@ resource "azurerm_container_app" "api" {
       env {
         name  = "ConnectionStrings__tshort"
         value = local.connection_string
+      }
+      env {
+        name        = "EntraId__ClientSecret"
+        secret_name = "entra-id-client-secret"
       }
     }
   }
@@ -130,18 +138,16 @@ resource "cloudflare_record" "api" {
 
 resource "time_sleep" "api_custom_domain_records" {
   create_duration = "2m"
-  depends_on = [
-    cloudflare_record.asuid_api,
-    cloudflare_record.api
-  ]
+  triggers = {
+    record           = "${cloudflare_record.api.name}.${var.dns_zone}"
+    verification_id  = cloudflare_record.asuid_api.content
+    container_app_id = azurerm_container_app.api.id
+  }
 }
 
 resource "azurerm_container_app_custom_domain" "api" {
   name             = local.full_api_custom_domain
-  container_app_id = azurerm_container_app.api.id
-  depends_on = [
-    time_sleep.api_custom_domain_records
-  ]
+  container_app_id = time_sleep.api_custom_domain_records.triggers["container_app_id"]
   lifecycle {
     ignore_changes = [
       certificate_binding_type, container_app_environment_certificate_id

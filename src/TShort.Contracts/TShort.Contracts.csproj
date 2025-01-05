@@ -1,6 +1,1 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <ItemGroup>
-      <Folder Include="V1\Requests\" />
-      <Folder Include="V1\Responses\" />
-    </ItemGroup>
-</Project>
+﻿<Project Sdk="Microsoft.NET.Sdk" />

@@ -1,0 +1,11 @@
+﻿{
+  Title: Bad Request,
+  Instance: /api/redirects/non-existing,
+  TraceId: {Scrubbed},
+  Errors: [
+    {
+      Name: shortName,
+      Reason: Short name must be alphanumeric and not contain slashes at the beginning or end; Slashes may also not directly follow a previous slash
+    }
+  ]
+}

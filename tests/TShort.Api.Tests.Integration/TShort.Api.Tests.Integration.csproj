@@ -2,12 +2,18 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
-  
+
+  <ItemGroup>
+    <PackageReference Include="Alba"/>
+    <PackageReference Include="Respawn"/>
+    <PackageReference Include="Testcontainers.MsSql"/>
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\TShort.Api\TShort.Api.csproj"/>
   </ItemGroup>
-  
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <Using Include="Alba"/>
   </ItemGroup>
 </Project>

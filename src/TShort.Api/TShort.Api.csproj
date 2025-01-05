@@ -2,14 +2,34 @@
   <PropertyGroup>
     <EnableSdkContainerSupport>true</EnableSdkContainerSupport>
     <ContainerFamily>noble-chiseled-extra</ContainerFamily>
+    <UserSecretsId>d7db93d6-3952-4a2a-8f1b-ab069d95d2c6</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TShort.Contracts\TShort.Contracts.csproj"/>
-    <ProjectReference Include="..\TShort.ServiceDefaults\TShort.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\TShort.ServiceDefaults\TShort.ServiceDefaults.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer"/>
+    <PackageReference Include="FastEndpoints"/>
+    <PackageReference Include="FastEndpoints.AspVersioning"/>
+    <PackageReference Include="FastEndpoints.Generator">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Identity.Web"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Summaries\V1\"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="TShort.Api.Tests.Integration"/>
   </ItemGroup>
 </Project>

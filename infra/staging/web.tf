@@ -21,13 +21,14 @@ resource "cloudflare_record" "primary" {
 }
 
 resource "time_sleep" "wait_for_dns_record" {
-  depends_on      = [cloudflare_record.primary]
   create_duration = "2m"
+  triggers = {
+    record = "${cloudflare_record.primary.name}.${var.dns_zone}"
+  }
 }
 
 resource "azurerm_static_web_app_custom_domain" "primary" {
   static_web_app_id = azurerm_static_web_app.main.id
-  domain_name       = local.full_primary_custom_domain
+  domain_name       = time_sleep.wait_for_dns_record.triggers["record"]
   validation_type   = "cname-delegation"
-  depends_on        = [time_sleep.wait_for_dns_record]
 }

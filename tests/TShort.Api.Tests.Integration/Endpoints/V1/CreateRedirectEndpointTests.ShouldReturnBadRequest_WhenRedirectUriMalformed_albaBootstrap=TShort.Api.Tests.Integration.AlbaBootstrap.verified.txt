@@ -1,0 +1,11 @@
+﻿{
+  Title: Bad Request,
+  Instance: /api/redirects,
+  TraceId: {Scrubbed},
+  Errors: [
+    {
+      Name: redirectTo,
+      Reason: Invalid redirect URI - this service only accepts HTTPS URIs
+    }
+  ]
+}

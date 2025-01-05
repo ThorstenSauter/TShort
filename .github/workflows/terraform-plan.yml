@@ -79,6 +79,7 @@ jobs:
       ENVIRONMENT_NAME: Staging
       TF_VAR_api_container_image_name: "${{ needs.plan-shared.outputs.registry-name }}.azurecr.io/placeholder"
       TF_VAR_container_registry_resource_group: ${{ needs.plan-shared.outputs.resource-group-name }}
+      TF_VAR_entra_id_client_secret: ${{ secrets.ENTRA_ID_CLIENT_SECRET }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -110,6 +111,7 @@ jobs:
       ENVIRONMENT_NAME: Production
       TF_VAR_api_container_image_name: "${{ needs.plan-shared.outputs.registry-name }}.azurecr.io/placeholder"
       TF_VAR_container_registry_resource_group: ${{ needs.plan-shared.outputs.resource-group-name }}
+      TF_VAR_entra_id_client_secret: ${{ secrets.ENTRA_ID_CLIENT_SECRET }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

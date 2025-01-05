@@ -102,6 +102,7 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_VAR_api_container_image_name: ${{ needs.build.outputs.image-name }}
       TF_VAR_container_registry_resource_group: ${{ needs.apply-shared.outputs.resource-group-name }}
+      TF_VAR_entra_id_client_secret: ${{ secrets.ENTRA_ID_CLIENT_SECRET }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -134,6 +135,7 @@ jobs:
       PROJECT_PATH: 'src/TShort.Web/TShort.Web.csproj'
       TF_VAR_api_container_image_name: ${{ needs.build.outputs.image-name }}
       TF_VAR_container_registry_resource_group: ${{ needs.apply-shared.outputs.resource-group-name }}
+      TF_VAR_entra_id_client_secret: ${{ secrets.ENTRA_ID_CLIENT_SECRET }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

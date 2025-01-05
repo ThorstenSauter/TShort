@@ -11,7 +11,8 @@ resource "azuread_group" "sql_server_admins" {
   owners           = [data.azuread_client_config.current.object_id]
   security_enabled = true
   members = [
-    data.azuread_client_config.current.object_id
+    data.azuread_client_config.current.object_id,
+    azurerm_user_assigned_identity.api.principal_id
   ]
 }
 
@@ -56,18 +57,4 @@ resource "azurerm_mssql_database" "main" {
   lifecycle {
     prevent_destroy = true
   }
-}
-
-resource "mssql_user" "api_identity" {
-  server {
-    host = azurerm_mssql_server.main.fully_qualified_domain_name
-    azuread_default_chain_auth {
-    }
-  }
-
-  database  = azurerm_mssql_database.main.name
-  username  = azurerm_user_assigned_identity.api.name
-  object_id = azurerm_user_assigned_identity.api.client_id
-
-  roles = ["db_datareader", "db_datawriter"]
 }

@@ -13,6 +13,4 @@ provider "azurerm" {
 
 provider "cloudflare" {}
 
-provider "mssql" {}
-
 provider "time" {}

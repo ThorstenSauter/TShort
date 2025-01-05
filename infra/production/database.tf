@@ -11,7 +11,8 @@ resource "azuread_group" "sql_server_admins" {
   owners           = [data.azuread_client_config.current.object_id]
   security_enabled = true
   members = [
-    data.azuread_client_config.current.object_id
+    data.azuread_client_config.current.object_id,
+    azurerm_user_assigned_identity.api.principal_id
   ]
 }
 
@@ -69,18 +70,4 @@ resource "azapi_resource" "sql_database" {
 
   schema_validation_enabled = false
   response_export_values    = ["*"]
-}
-
-resource "mssql_user" "api_identity" {
-  server {
-    host = azurerm_mssql_server.main.fully_qualified_domain_name
-    azuread_default_chain_auth {
-    }
-  }
-
-  database  = azapi_resource.sql_database.name
-  username  = azurerm_user_assigned_identity.api.name
-  object_id = azurerm_user_assigned_identity.api.client_id
-
-  roles = ["db_datareader", "db_datawriter"]
 }

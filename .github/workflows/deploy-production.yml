@@ -93,7 +93,7 @@ jobs:
   migration-bundle:
     name: Build and apply database migration bundle
     runs-on: ubuntu-latest
-    environment: staging
+    environment: production
     needs:
       - shared-terraform-outputs
       - build

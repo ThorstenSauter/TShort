@@ -14,6 +14,9 @@ resource "azuread_group" "sql_server_admins" {
     data.azuread_client_config.current.object_id,
     azurerm_user_assigned_identity.api.principal_id
   ]
+  lifecycle {
+    ignore_changes = [owners]
+  }
 }
 
 resource "time_sleep" "group_provisioning" {

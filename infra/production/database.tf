@@ -1,5 +1,5 @@
 locals {
-  connection_string                  = "Server=tcp:${azurerm_mssql_server.main.fully_qualified_domain_name},1433;Database=${azurerm_mssql_database.main.name};Authentication=Active Directory Default;User ID=${azurerm_user_assigned_identity.api.client_id};azurerm_user_assigned_identity.api.client_id};Encrypt=True;Connection Timeout=30;"
+  connection_string                  = "Server=tcp:${azurerm_mssql_server.main.fully_qualified_domain_name},1433;Database=${azapi_resource.sql_database.name};Authentication=Active Directory Default;User ID=${azurerm_user_assigned_identity.api.client_id};azurerm_user_assigned_identity.api.client_id};Encrypt=True;Connection Timeout=30;"
   database_administrators_group_name = "SQL-Admins-${local.database_server_name}"
   database_name                      = "sqldb-${local.app_name}"
   database_server_name               = "sql-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
@@ -39,16 +39,36 @@ resource "azurerm_mssql_server" "main" {
   tags = var.tags
 }
 
-resource "azurerm_mssql_database" "main" {
-  name        = local.database_name
-  server_id   = azurerm_mssql_server.main.id
-  collation   = "SQL_Latin1_General_CP1_CI_AS"
-  sku_name    = "Free"
-  max_size_gb = 5
-  tags        = var.tags
-  lifecycle {
-    prevent_destroy = true
+resource "azapi_resource" "sql_database" {
+  type      = "Microsoft.Sql/servers/databases@2023-08-01-preview"
+  name      = "sqldb-001"
+  location  = azurerm_resource_group.main.location
+  parent_id = azurerm_mssql_server.main.id
+
+  body = {
+    properties = {
+      minCapacity                      = 0.5
+      maxSizeBytes                     = 34359738368
+      autoPauseDelay                   = 15
+      zoneRedundant                    = false
+      isLedgerOn                       = false
+      useFreeLimit                     = true
+      readScale                        = "Disabled"
+      freeLimitExhaustionBehavior      = "BillOverUsage"
+      availabilityZone                 = "NoPreference"
+      requestedBackupStorageRedundancy = "Local"
+    }
+
+    sku = {
+      name     = "GP_S_Gen5"
+      tier     = "GeneralPurpose"
+      family   = "Gen5"
+      capacity = 2
+    }
   }
+
+  schema_validation_enabled = false
+  response_export_values    = ["*"]
 }
 
 resource "mssql_user" "api_identity" {
@@ -58,7 +78,7 @@ resource "mssql_user" "api_identity" {
     }
   }
 
-  database  = azurerm_mssql_database.main.name
+  database  = azapi_resource.sql_database.name
   username  = azurerm_user_assigned_identity.api.name
   object_id = azurerm_user_assigned_identity.api.client_id
 

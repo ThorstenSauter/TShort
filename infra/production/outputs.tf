@@ -16,5 +16,5 @@ output "sql_server_fqdn" {
 
 output "sql_server_database" {
   description = "The name of the SQL Server database."
-  value       = azurerm_mssql_database.main.name
+  value       = azapi_resource.sql_database.name
 }

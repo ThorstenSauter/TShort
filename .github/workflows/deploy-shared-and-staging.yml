@@ -86,6 +86,61 @@ jobs:
         id: image-name
         run: echo "image-name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ vars.API_IMAGE_NAME }}:${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
 
+  migration-bundle:
+    name: Build and apply database migration bundle
+    runs-on: ubuntu-latest
+    environment: staging
+    needs:
+      - apply-shared
+      - build
+    env:
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_USE_AZUREAD: true
+      ARM_USE_OIDC: true
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      MIGRATION_BUNDLE_NAME: 'apply-migrations'
+      OUTPUT_DIR: 'publish'
+      PROJECT_PATH: 'src/TShort.Api/TShort.Api.csproj'
+      TF_VAR_api_container_image_name: ${{ needs.build.outputs.image-name }}
+      TF_VAR_container_registry_resource_group: ${{ needs.apply-shared.outputs.resource-group-name }}
+      TF_VAR_entra_id_client_secret: ${{ secrets.ENTRA_ID_CLIENT_SECRET }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Terraform init
+        uses: ThorstenSauter/terraform-actions/init@v1
+        with:
+          terraform-version: ${{ vars.TERRAFORM_VERSION }}
+          infra-directory: ${{ vars.TF_WORKING_DIRECTORY }}
+          resource-group: ${{ vars.TF_BACKEND_RESOURCE_GROUP_NAME }}
+          storage-account: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT_NAME }}
+          container: ${{ vars.TF_BACKEND_STATE_CONTAINER_NAME }}
+          state-file: ${{ vars.TF_BACKEND_STATE_FILE_NAME }}
+      - name: Terraform apply refresh only
+        working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
+        run: terraform apply -refresh-only -auto-approve -input=false
+      - name: Retrieve connection string
+        id: connection-string-retrieval
+        working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
+        run: |
+          connectionstring=$(terraform output -raw connection_string)
+          echo "connection-string=$connectionstring" >> "$GITHUB_OUTPUT"
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          source-url: ${{ vars.NUGET_FEED_URI }}
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_GITHUB_PACKAGES_TOKEN }}
+      - name: Install dotnet-ef tool
+        run: dotnet tool install -g dotnet-ef
+      - name: Generate EF core migrations bundle
+        run: dotnet-ef migrations bundle --project ${{ env.PROJECT_PATH }} --output ${{ env.MIGRATION_BUNDLE_NAME }}
+      - name: Run migration bundle
+        run: ./{{ env.MIGRATION_BUNDLE_NAME }} --connection "${{ steps.connection-string-retrieval.outputs.connection-string }}"
+
   apply-staging:
     name: Apply staging environment
     runs-on: ubuntu-latest
@@ -93,6 +148,7 @@ jobs:
     needs:
       - apply-shared
       - build
+      - migration-bundle
     env:
       ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}

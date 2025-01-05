@@ -51,7 +51,7 @@ resource "azurerm_mssql_database" "main" {
   server_id   = azurerm_mssql_server.main.id
   collation   = "SQL_Latin1_General_CP1_CI_AS"
   sku_name    = "Basic"
-  max_size_gb = 5
+  max_size_gb = 1
   tags        = var.tags
   lifecycle {
     prevent_destroy = true

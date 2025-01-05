@@ -141,7 +141,7 @@ jobs:
       - name: Generate EF core migrations bundle
         run: dotnet-ef migrations bundle --project ${{ env.PROJECT_PATH }} --output ${{ env.MIGRATION_BUNDLE_NAME }}
       - name: Run migration bundle
-        run: ./{{ env.MIGRATION_BUNDLE_NAME }} --connection "${{ env.CONNECTION_STRING }}"
+        run: ./${{ env.MIGRATION_BUNDLE_NAME }} --connection "${{ env.CONNECTION_STRING }}"
         env:
           CONNECTION_STRING: >-
             Server=tcp:${{ steps.database-output-retrieval.outputs.server }},1433;

@@ -1,5 +1,5 @@
 locals {
-  connection_string                  = "Server=tcp:${azurerm_mssql_server.main.fully_qualified_domain_name},1433;Database=${azurerm_mssql_database.main.name};Authentication=Active Directory Default;User ID=${azurerm_user_assigned_identity.api.client_id};azurerm_user_assigned_identity.api.client_id};Encrypt=True;Connection Timeout=30;"
+  connection_string                  = "Server=tcp:${azurerm_mssql_server.main.fully_qualified_domain_name},1433;Database=${azapi_resource.sql_database.name};Authentication=Active Directory Default;User ID=${azurerm_user_assigned_identity.api.client_id};azurerm_user_assigned_identity.api.client_id};Encrypt=True;Connection Timeout=30;"
   database_administrators_group_name = "SQL-Admins-${local.database_server_name}"
   database_name                      = "sqldb-${local.app_name}"
   database_server_name               = "sql-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"

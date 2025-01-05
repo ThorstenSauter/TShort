@@ -1,5 +1,5 @@
 locals {
-  connection_string                  = "Server=tcp:${azurerm_mssql_server.main.fully_qualified_domain_name},1433;Database=${azurerm_mssql_database.main.name};Authentication=Active Directory Default;User ID=${azurerm_user_assigned_identity.api.client_id};azurerm_user_assigned_identity.api.client_id};Encrypt=True;Connection Timeout=30;"
+  connection_string                  = "Server=tcp:${azurerm_mssql_server.main.fully_qualified_domain_name},1433;Database=${azurerm_mssql_database.main.name};Authentication=Active Directory Default;User ID=${azurerm_user_assigned_identity.api.client_id};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
   database_administrators_group_name = "SQL-Admins-${local.database_server_name}"
   database_name                      = "sqldb-${local.app_name}"
   database_server_name               = "sql-${local.app_name}-${var.env}-${var.location}-${var.resource_id}"
@@ -11,7 +11,8 @@ resource "azuread_group" "sql_server_admins" {
   owners           = [data.azuread_client_config.current.object_id]
   security_enabled = true
   members = [
-    data.azuread_client_config.current.object_id
+    data.azuread_client_config.current.object_id,
+    azurerm_user_assigned_identity.api.principal_id
   ]
 }
 
@@ -56,18 +57,4 @@ resource "azurerm_mssql_database" "main" {
   lifecycle {
     prevent_destroy = true
   }
-}
-
-resource "mssql_user" "api_identity" {
-  server {
-    host = azurerm_mssql_server.main.fully_qualified_domain_name
-    azuread_default_chain_auth {
-    }
-  }
-
-  database  = azurerm_mssql_database.main.name
-  username  = azurerm_user_assigned_identity.api.name
-  object_id = azurerm_user_assigned_identity.api.client_id
-
-  roles = ["db_datareader", "db_datawriter"]
 }

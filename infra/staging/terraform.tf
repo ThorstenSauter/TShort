@@ -17,10 +17,6 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 4.49.0"
     }
-    mssql = {
-      source  = "betr-io/mssql"
-      version = "0.3.1"
-    }
     time = {
       source  = "hashicorp/time"
       version = "0.12.1"

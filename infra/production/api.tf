@@ -86,6 +86,10 @@ resource "azurerm_container_app" "api" {
     server   = data.azurerm_container_registry.main.login_server
     identity = azurerm_user_assigned_identity.api.id
   }
+  secret {
+    name  = "entra-id-client-secret"
+    value = var.entra_id_client_secret
+  }
   template {
     container {
       name   = "${local.app_name}-api"
@@ -99,6 +103,10 @@ resource "azurerm_container_app" "api" {
       env {
         name  = "ConnectionStrings__tshort"
         value = local.connection_string
+      }
+      env {
+        name        = "EntraId__ClientSecret"
+        secret_name = "entra-id-client-secret"
       }
     }
   }

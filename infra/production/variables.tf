@@ -18,6 +18,12 @@ variable "dns_zone" {
   description = "The DNS zone for the custom domains."
 }
 
+variable "entra_id_client_secret" {
+  type        = string
+  description = "The client secret for the Entra ID application."
+  sensitive   = true
+}
+
 variable "env" {
   type        = string
   description = "The shorthand name of the environment the infrastructure is deployed to."

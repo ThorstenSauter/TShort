@@ -1,5 +1,7 @@
 provider "azapi" {}
 
+provider "azuread" {}
+
 provider "azurerm" {
   storage_use_azuread = true
   features {
@@ -10,5 +12,7 @@ provider "azurerm" {
 }
 
 provider "cloudflare" {}
+
+provider "mssql" {}
 
 provider "time" {}

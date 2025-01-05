@@ -5,6 +5,10 @@ terraform {
       source  = "Azure/azapi"
       version = "~> 2.2.0"
     }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "3.0.2"
+    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 4.14.0"
@@ -12,6 +16,10 @@ terraform {
     cloudflare = {
       source  = "cloudflare/cloudflare"
       version = "~> 4.49.0"
+    }
+    mssql = {
+      source  = "betr-io/mssql"
+      version = "0.3.1"
     }
     time = {
       source  = "hashicorp/time"

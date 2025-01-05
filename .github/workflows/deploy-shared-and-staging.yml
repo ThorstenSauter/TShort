@@ -121,12 +121,14 @@ jobs:
       - name: Terraform apply refresh only
         working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
         run: terraform apply -refresh-only -auto-approve -input=false
-      - name: Retrieve connection string
-        id: connection-string-retrieval
+      - name: Retrieve database outputs
+        id: database-output-retrieval
         working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
         run: |
-          connectionstring=$(terraform output -raw connection_string)
-          echo "connection-string=$connectionstring" >> "$GITHUB_OUTPUT"
+          server=$(terraform output -raw sql_server_fqdn)
+          echo "server=$server" >> "$GITHUB_OUTPUT"
+          database=$(terraform output -raw sql_server_database)
+          echo "database=$database" >> "$GITHUB_OUTPUT"
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -139,8 +141,14 @@ jobs:
       - name: Generate EF core migrations bundle
         run: dotnet-ef migrations bundle --project ${{ env.PROJECT_PATH }} --output ${{ env.MIGRATION_BUNDLE_NAME }}
       - name: Run migration bundle
-        run: ./{{ env.MIGRATION_BUNDLE_NAME }} --connection "${{ steps.connection-string-retrieval.outputs.connection-string }}"
-
+        run: ./{{ env.MIGRATION_BUNDLE_NAME }} --connection "${{ env.CONNECTION_STRING }}"
+        env:
+          CONNECTION_STRING: >-
+            Server=tcp:${{ steps.database-output-retrieval.outputs.server }},1433;
+            Authentication=Active Directory Default;
+            Database=${{ steps.database-output-retrieval.outputs.database }};
+            User ID=${{ vars.AZURE_CLIENT_ID }};
+            Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
   apply-staging:
     name: Apply staging environment
     runs-on: ubuntu-latest

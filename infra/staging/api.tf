@@ -96,6 +96,10 @@ resource "azurerm_container_app" "api" {
         name  = "APPLICATIONINSIGHTS_CONNECTION_STRING"
         value = azurerm_application_insights.main.connection_string
       }
+      env {
+        name  = "ConnectionStrings__tshort"
+        value = local.connection_string
+      }
     }
   }
   tags = var.tags

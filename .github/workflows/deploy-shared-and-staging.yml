@@ -140,6 +140,12 @@ jobs:
         run: dotnet tool install -g dotnet-ef
       - name: Generate EF core migrations bundle
         run: dotnet-ef migrations bundle --project ${{ env.PROJECT_PATH }} --output ${{ env.MIGRATION_BUNDLE_NAME }}
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
       - name: Run migration bundle
         run: ./${{ env.MIGRATION_BUNDLE_NAME }} --connection "${{ env.CONNECTION_STRING }}"
         env:
@@ -149,6 +155,7 @@ jobs:
             Database=${{ steps.database-output-retrieval.outputs.database }};
             User ID=${{ vars.AZURE_CLIENT_ID }};
             Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+
   apply-staging:
     name: Apply staging environment
     runs-on: ubuntu-latest

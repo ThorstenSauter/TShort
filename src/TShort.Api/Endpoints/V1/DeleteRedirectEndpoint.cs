@@ -2,20 +2,20 @@
 using FastEndpoints.AspVersioning;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
 using TShort.Api.Authentication;
-using TShort.Api.Data;
+using TShort.Api.Errors;
+using TShort.Api.Extensions;
+using TShort.Api.Services;
 using TShort.Api.Validation;
 using TShort.Api.Versioning;
 using TShort.Contracts.V1.Requests;
 
 namespace TShort.Api.Endpoints.V1;
 
-public class DeleteRedirectEndpoint(AppDbContext dbContext, ILogger<DeleteRedirectEndpoint> logger)
-    : Endpoint<DeleteRedirectRequest, Results<NoContent, NotFound, ForbidHttpResult, InternalServerError>>
+public class DeleteRedirectEndpoint(IRedirectService redirectService)
+    : Endpoint<DeleteRedirectRequest, Results<NoContent, NotFound, ForbidHttpResult, InternalServerError<string>>>
 {
-    private readonly AppDbContext _dbContext = dbContext;
-    private readonly ILogger<DeleteRedirectEndpoint> _logger = logger;
+    private readonly IRedirectService _redirectService = redirectService;
 
     public override void Configure()
     {
@@ -26,35 +26,30 @@ public class DeleteRedirectEndpoint(AppDbContext dbContext, ILogger<DeleteRedire
             .MapToApiVersion(Versions.V1));
     }
 
-    public override async Task<Results<NoContent, NotFound, ForbidHttpResult, InternalServerError>> ExecuteAsync(
-        DeleteRedirectRequest req, CancellationToken ct)
+    public override async Task<Results<NoContent, NotFound, ForbidHttpResult, InternalServerError<string>>>
+        ExecuteAsync(DeleteRedirectRequest req, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(req);
 
-        var redirect = await _dbContext.Redirects.FindAsync([req.ShortName], ct);
-        if (redirect is null)
+        var deleteRedirectResult = await _redirectService.GetRedirectAsync(
+            req.ShortName, User.GetUserId(), User.IsPrivileged(), ct);
+
+        if (deleteRedirectResult.IsSuccess)
+        {
+            return TypedResults.NoContent();
+        }
+
+        if (deleteRedirectResult.HasError<NotFoundError>())
         {
             return TypedResults.NotFound();
         }
 
-        if (redirect.CreatedBy != HttpContext.User.GetUserId() && !HttpContext.User.IsInRole(Role.Administrator)
-                                                               && !HttpContext.User.IsInRole(Role.Superadministrator))
+        if (deleteRedirectResult.HasError<InvalidObjectAccessError>())
         {
             return TypedResults.Forbid();
         }
 
-        try
-        {
-            _dbContext.Redirects.Remove(redirect);
-            await _dbContext.SaveChangesAsync(ct);
-        }
-        catch (DbUpdateException ex)
-        {
-            _logger.LogError(ex, "Failed to remove redirect {ShortName}", req.ShortName);
-            return TypedResults.InternalServerError();
-        }
-
-        return TypedResults.NoContent();
+        return TypedResults.InternalServerError(deleteRedirectResult.GetAllErrorMessages());
     }
 }
 

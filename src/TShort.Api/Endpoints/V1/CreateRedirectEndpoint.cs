@@ -1,28 +1,22 @@
-﻿using System.Collections.Frozen;
-using System.Text.RegularExpressions;
-using FastEndpoints;
+﻿using FastEndpoints;
 using FastEndpoints.AspVersioning;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
 using TShort.Api.Authentication;
-using TShort.Api.Data;
-using TShort.Api.Data.Models;
+using TShort.Api.Errors;
+using TShort.Api.Extensions;
+using TShort.Api.Mappers;
+using TShort.Api.Services;
 using TShort.Api.Validation;
 using TShort.Api.Versioning;
 using TShort.Contracts.V1.Requests;
 
 namespace TShort.Api.Endpoints.V1;
 
-public sealed class CreateRedirectEndpoint(AppDbContext dbContext, ILogger<CreateRedirectEndpoint> logger)
-    : Endpoint<CreateRedirectRequest,
-        Results<Created<Uri>, ProblemDetails, InternalServerError<string>>>
+public sealed class CreateRedirectEndpoint(IRedirectService redirectService)
+    : Endpoint<CreateRedirectRequest, Results<Created<Uri>, ProblemDetails, InternalServerError<string>>>
 {
-    public static readonly FrozenSet<string> RestrictedShortNames = new HashSet<string> { "admin", "api" }
-        .ToFrozenSet();
-
-    private readonly AppDbContext _dbContext = dbContext;
-    private readonly ILogger<CreateRedirectEndpoint> _logger = logger;
+    private readonly IRedirectService _redirectService = redirectService;
 
     public override void Configure()
     {
@@ -38,33 +32,19 @@ public sealed class CreateRedirectEndpoint(AppDbContext dbContext, ILogger<Creat
     {
         ArgumentNullException.ThrowIfNull(req);
 
-        if (RestrictedShortNames.Contains(req.ShortName))
+        var redirect = req.ToRedirect(User.GetUserId());
+
+        var creationResult = await _redirectService.CreateRedirectAsync(redirect, ct);
+
+        if (creationResult.HasError<PropertyValidationError>(out var validationErrors))
         {
-            AddError(r => r.ShortName, "The short name is reserved");
+            this.AddValidationErrors(validationErrors);
             return new ProblemDetails(ValidationFailures);
         }
 
-        var existingRedirect = await _dbContext.Redirects.FindAsync([req.ShortName], ct);
-        if (existingRedirect is not null)
+        if (creationResult.IsFailed)
         {
-            AddError(r => r.ShortName, "The short name is already in use");
-            return new ProblemDetails(ValidationFailures);
-        }
-
-        var redirect = new Redirect
-        {
-            ShortName = req.ShortName, RedirectTo = req.RedirectTo, CreatedBy = HttpContext.User.GetUserId()
-        };
-
-        try
-        {
-            _dbContext.Redirects.Add(redirect);
-            await _dbContext.SaveChangesAsync(ct);
-        }
-        catch (DbUpdateException ex)
-        {
-            _logger.LogError(ex, "Failed to save redirect");
-            return TypedResults.InternalServerError<string>("Failed to save redirect");
+            return TypedResults.InternalServerError(creationResult.GetAllErrorMessages());
         }
 
         return TypedResults.Created<Uri>(new Uri($"/{req.ShortName}", UriKind.Relative), null);

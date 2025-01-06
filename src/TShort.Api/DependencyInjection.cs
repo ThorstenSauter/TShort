@@ -2,10 +2,10 @@
 using Asp.Versioning;
 using FastEndpoints;
 using FastEndpoints.AspVersioning;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Identity.Web;
 using TShort.Api.Authentication;
+using TShort.Api.Services;
 using TShort.Api.Versioning;
 
 namespace TShort.Api;
@@ -13,7 +13,7 @@ namespace TShort.Api;
 internal static class DependencyInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services) =>
-        services;
+        services.AddScoped<IRedirectService, RedirectService>();
 
     public static IServiceCollection AddMicrosoftIdentityPlatform(
         this IServiceCollection services, IConfiguration configuration)

@@ -1,20 +1,22 @@
 ﻿using FastEndpoints;
 using FastEndpoints.AspVersioning;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.Identity.Web;
 using TShort.Api.Authentication;
-using TShort.Api.Data;
+using TShort.Api.Errors;
+using TShort.Api.Extensions;
 using TShort.Api.Mappers;
+using TShort.Api.Services;
 using TShort.Api.Versioning;
 using TShort.Contracts.V1.Requests;
 using TShort.Contracts.V1.Responses;
 
 namespace TShort.Api.Endpoints.V1;
 
-public sealed class GetRedirectEndpoint(AppDbContext dbContext)
-    : Endpoint<GetRedirectRequest, Results<Ok<RedirectResponse>, NotFound, ForbidHttpResult>>
+public sealed class GetRedirectEndpoint(IRedirectService redirectService)
+    : Endpoint<GetRedirectRequest,
+        Results<Ok<RedirectResponse>, NotFound, ForbidHttpResult, InternalServerError<string>>>
 {
-    private readonly AppDbContext _dbContext = dbContext;
+    private readonly IRedirectService _redirectService = redirectService;
 
     public override void Configure()
     {
@@ -25,26 +27,29 @@ public sealed class GetRedirectEndpoint(AppDbContext dbContext)
             .MapToApiVersion(Versions.V1));
     }
 
-    public override async Task<Results<Ok<RedirectResponse>, NotFound, ForbidHttpResult>> ExecuteAsync(
-        GetRedirectRequest req, CancellationToken ct)
+    public override async Task<Results<Ok<RedirectResponse>, NotFound, ForbidHttpResult, InternalServerError<string>>>
+        ExecuteAsync(GetRedirectRequest req, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(req);
 
-        var redirect = await _dbContext.Redirects.FindAsync([req.ShortName], ct);
-        if (redirect is null)
+        var getRedirectResult = await _redirectService.GetRedirectAsync(
+            req.ShortName, User.GetUserId(), User.IsPrivileged(), ct);
+
+        if (getRedirectResult.IsSuccess)
+        {
+            return TypedResults.Ok(getRedirectResult.Value.ToResponse());
+        }
+
+        if (getRedirectResult.HasError<NotFoundError>())
         {
             return TypedResults.NotFound();
         }
 
-        var userId = HttpContext.User.GetUserId();
-
-        if (redirect.CreatedBy != userId
-            && !HttpContext.User.IsInRole(Role.Administrator)
-            && !HttpContext.User.IsInRole(Role.Superadministrator))
+        if (getRedirectResult.HasError<InvalidObjectAccessError>())
         {
             return TypedResults.Forbid();
         }
 
-        return TypedResults.Ok(redirect.ToResponse());
+        return TypedResults.InternalServerError(getRedirectResult.GetAllErrorMessages());
     }
 }

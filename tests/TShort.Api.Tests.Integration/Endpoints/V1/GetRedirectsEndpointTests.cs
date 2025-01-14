@@ -42,7 +42,7 @@ public sealed class GetRedirectsEndpointTests(AlbaBootstrap albaBootstrap) : Alb
         var response = result.ReadAsJson<RedirectsResponse>();
 
         // Assert
-        response.Redirects.Should().HaveCount(1);
+        response.Redirects.ShouldHaveSingleItem();
         await Verify(response);
     }
 
@@ -81,7 +81,7 @@ public sealed class GetRedirectsEndpointTests(AlbaBootstrap albaBootstrap) : Alb
         var response = result.ReadAsJson<RedirectsResponse>();
 
         // Assert
-        response.Redirects.Should().HaveCount(2);
+        response.Redirects.Count.ShouldBe(2);
         await Verify(response);
     }
 }

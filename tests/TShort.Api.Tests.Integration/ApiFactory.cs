@@ -9,7 +9,7 @@ using TUnit.Core.Interfaces;
 
 namespace TShort.Api.Tests.Integration;
 
-public sealed class AlbaBootstrap : IAsyncInitializer, IAsyncDisposable
+public sealed class ApiFactory : IAsyncInitializer, IAsyncDisposable
 {
     internal const string DefaultUserId = "bf620beb-36c3-4bfb-b6d0-41fcca20d4b0";
 
@@ -48,4 +48,7 @@ public sealed class AlbaBootstrap : IAsyncInitializer, IAsyncDisposable
 
     public async Task ResetDatabaseAsync() =>
         await _respawner.ResetAsync(_dbConnection);
+
+    public override string ToString() =>
+        nameof(ApiFactory);
 }

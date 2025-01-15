@@ -6,8 +6,8 @@ using TShort.Contracts.V1.Requests;
 
 namespace TShort.Api.Tests.Integration.Endpoints.V1;
 
-[ClassDataSource<AlbaBootstrap>(Shared = SharedType.PerAssembly)]
-public sealed class DeleteRedirectEndpointTests(AlbaBootstrap albaBootstrap) : AlbaTestBase(albaBootstrap)
+[ClassDataSource<ApiFactory>(Shared = SharedType.PerAssembly)]
+public sealed class DeleteRedirectEndpointTests(ApiFactory apiFactory) : EndpointTestBase(apiFactory)
 {
     [Test]
     public async Task ShouldReturnNoContent_WhenRedirectIsDeleted()

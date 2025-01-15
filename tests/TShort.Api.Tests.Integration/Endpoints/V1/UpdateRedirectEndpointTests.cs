@@ -7,8 +7,8 @@ using TShort.Contracts.V1.Responses;
 
 namespace TShort.Api.Tests.Integration.Endpoints.V1;
 
-[ClassDataSource<AlbaBootstrap>(Shared = SharedType.PerAssembly)]
-public sealed class UpdateRedirectEndpointTests(AlbaBootstrap albaBootstrap) : AlbaTestBase(albaBootstrap)
+[ClassDataSource<ApiFactory>(Shared = SharedType.PerAssembly)]
+public sealed class UpdateRedirectEndpointTests(ApiFactory apiFactory) : EndpointTestBase(apiFactory)
 {
     [Test]
     public async Task ShouldReturnNoContent_WhenRedirectIsUpdated()

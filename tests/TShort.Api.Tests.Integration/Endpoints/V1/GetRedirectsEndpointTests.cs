@@ -7,8 +7,8 @@ using TShort.Contracts.V1.Responses;
 
 namespace TShort.Api.Tests.Integration.Endpoints.V1;
 
-[ClassDataSource<AlbaBootstrap>(Shared = SharedType.PerAssembly)]
-public sealed class GetRedirectsEndpointTests(AlbaBootstrap albaBootstrap) : AlbaTestBase(albaBootstrap)
+[ClassDataSource<ApiFactory>(Shared = SharedType.PerAssembly)]
+public sealed class GetRedirectsEndpointTests(ApiFactory apiFactory) : EndpointTestBase(apiFactory)
 {
     [Test]
     public async Task ShouldReturnFilteredRedirects_WhenUserIsUnprivileged()
@@ -42,7 +42,7 @@ public sealed class GetRedirectsEndpointTests(AlbaBootstrap albaBootstrap) : Alb
         var response = result.ReadAsJson<RedirectsResponse>();
 
         // Assert
-        response.Redirects.ShouldHaveSingleItem();
+        await Assert.That(response.Redirects.Count).IsEqualTo(1);
         await Verify(response);
     }
 
@@ -81,7 +81,7 @@ public sealed class GetRedirectsEndpointTests(AlbaBootstrap albaBootstrap) : Alb
         var response = result.ReadAsJson<RedirectsResponse>();
 
         // Assert
-        response.Redirects.Count.ShouldBe(2);
+        await Assert.That(response.Redirects.Count).IsEqualTo(2);
         await Verify(response);
     }
 }

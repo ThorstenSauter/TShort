@@ -7,8 +7,8 @@ using TShort.Contracts.V1.Responses;
 
 namespace TShort.Api.Tests.Integration.Endpoints.V1;
 
-[ClassDataSource<AlbaBootstrap>(Shared = SharedType.PerAssembly)]
-public sealed class GetRedirectEndpointTests(AlbaBootstrap albaBootstrap) : AlbaTestBase(albaBootstrap)
+[ClassDataSource<ApiFactory>(Shared = SharedType.PerAssembly)]
+public sealed class GetRedirectEndpointTests(ApiFactory apiFactory) : EndpointTestBase(apiFactory)
 {
     [Test]
     public async Task ShouldReturnOk_WhenRedirectExists()

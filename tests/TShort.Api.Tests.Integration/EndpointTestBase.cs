@@ -3,13 +3,13 @@
 namespace TShort.Api.Tests.Integration;
 
 [NotInParallel(DatabaseTest)]
-public abstract class AlbaTestBase
+public abstract class EndpointTestBase
 {
-    private readonly AlbaBootstrap _albaBootstrap;
+    private readonly ApiFactory _apiFactory;
 
-    protected AlbaTestBase(AlbaBootstrap albaBootstrap)
+    protected EndpointTestBase(ApiFactory apiFactory)
     {
-        _albaBootstrap = albaBootstrap;
+        _apiFactory = apiFactory;
         VerifySettings.ScrubMember<ProblemDetails>(nameof(ProblemDetails.TraceId));
     }
 
@@ -17,9 +17,9 @@ public abstract class AlbaTestBase
 
     protected VerifySettings VerifySettings { get; } = new();
 
-    protected IAlbaHost Host => _albaBootstrap.Host;
+    protected IAlbaHost Host => _apiFactory.Host;
 
     [After(Test)]
     public async Task ResetDatabaseAsync() =>
-        await _albaBootstrap.ResetDatabaseAsync();
+        await _apiFactory.ResetDatabaseAsync();
 }

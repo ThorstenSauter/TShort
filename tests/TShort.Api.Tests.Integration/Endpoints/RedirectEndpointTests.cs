@@ -3,8 +3,8 @@ using TShort.Contracts.V1.Requests;
 
 namespace TShort.Api.Tests.Integration.Endpoints;
 
-[ClassDataSource<AlbaBootstrap>(Shared = SharedType.PerAssembly)]
-public sealed class RedirectEndpointTests(AlbaBootstrap albaBootstrap) : AlbaTestBase(albaBootstrap)
+[ClassDataSource<ApiFactory>(Shared = SharedType.PerAssembly)]
+public sealed class RedirectEndpointTests(ApiFactory apiFactory) : EndpointTestBase(apiFactory)
 {
     [Test]
     public async Task ShouldRedirectToUri_WhenRedirectExists()
@@ -20,7 +20,7 @@ public sealed class RedirectEndpointTests(AlbaBootstrap albaBootstrap) : AlbaTes
         var location = redirectResult.Context.Response.Headers.Location.ToString();
 
         // Act
-        var result = await Host.Scenario(s =>
+        await Host.Scenario(s =>
         {
             s.Get.Url(location);
             s.RedirectShouldBe(request.RedirectTo);

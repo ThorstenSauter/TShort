@@ -5,8 +5,8 @@ using TShort.Contracts.V1.Requests;
 
 namespace TShort.Api.Tests.Integration.Endpoints.V1;
 
-[ClassDataSource<AlbaBootstrap>(Shared = SharedType.PerAssembly)]
-public class CreateRedirectEndpointTests(AlbaBootstrap albaBootstrap) : AlbaTestBase(albaBootstrap)
+[ClassDataSource<ApiFactory>(Shared = SharedType.PerAssembly)]
+public class CreateRedirectEndpointTests(ApiFactory apiFactory) : EndpointTestBase(apiFactory)
 {
     [Test]
     public async Task ShouldReturnOk_WhenRequestIsValid()

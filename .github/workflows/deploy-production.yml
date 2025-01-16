@@ -14,7 +14,7 @@ permissions:
 jobs:
   shared-terraform-outputs:
     name: Get Terraform outputs for shared environment
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     environment: shared
     outputs:
       registry-name: ${{ steps.terraform-outputs.outputs.registry-name }}
@@ -162,7 +162,7 @@ jobs:
 
   apply:
     name: Apply production environment
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     environment: production
     needs:
       - build

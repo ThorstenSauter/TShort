@@ -17,7 +17,7 @@ concurrency:
 jobs:
   validate:
     name: Validate Terraform configuration
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
 
   plan-shared:
     name: Plan shared environment
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     environment: shared
     outputs:
         registry-name: ${{ steps.terraform-outputs.outputs.registry-name }}
@@ -65,7 +65,7 @@ jobs:
 
   plan-staging:
     name: Plan staging environment
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     environment: staging
     needs:
       - plan-shared
@@ -97,7 +97,7 @@ jobs:
 
   plan-production:
     name: Plan production environment
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     environment: production
     needs:
       - plan-shared

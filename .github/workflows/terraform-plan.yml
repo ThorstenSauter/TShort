@@ -63,10 +63,13 @@ jobs:
           echo "registry-name=$(terraform output -raw registry_name)" >> "$GITHUB_OUTPUT"
           echo "resource-group-name=$(terraform output -raw resource_group_name)" >> "$GITHUB_OUTPUT"
 
-  plan-staging:
-    name: Plan staging environment
+  plan-app-environments:
+    name: Plan app environment
     runs-on: ubuntu-24.04-arm
-    environment: staging
+    strategy:
+      matrix:
+        environments: [production, staging]
+    environment: ${{ matrix.environments }}
     needs:
       - plan-shared
     env:
@@ -76,39 +79,7 @@ jobs:
       ARM_USE_AZUREAD: true
       ARM_USE_OIDC: true
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      ENVIRONMENT_NAME: Staging
-      TF_VAR_api_container_image_name: "${{ needs.plan-shared.outputs.registry-name }}.azurecr.io/placeholder"
-      TF_VAR_container_registry_resource_group: ${{ needs.plan-shared.outputs.resource-group-name }}
-      TF_VAR_entra_id_client_secret: ${{ secrets.ENTRA_ID_CLIENT_SECRET }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Terraform plan
-        uses: ThorstenSauter/terraform-actions/plan@v1
-        with:
-          environment-name: ${{ env.ENVIRONMENT_NAME }}
-          terraform-version: ${{ vars.TERRAFORM_VERSION }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          infra-directory: ${{ vars.TF_WORKING_DIRECTORY }}
-          resource-group: ${{ vars.TF_BACKEND_RESOURCE_GROUP_NAME }}
-          storage-account: ${{ vars.TF_BACKEND_STORAGE_ACCOUNT_NAME }}
-          container: ${{ vars.TF_BACKEND_STATE_CONTAINER_NAME }}
-          state-file: ${{ vars.TF_BACKEND_STATE_FILE_NAME }}
-
-  plan-production:
-    name: Plan production environment
-    runs-on: ubuntu-24.04-arm
-    environment: production
-    needs:
-      - plan-shared
-    env:
-      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-      ARM_USE_AZUREAD: true
-      ARM_USE_OIDC: true
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      ENVIRONMENT_NAME: Production
+      ENVIRONMENT_NAME: ${{ matrix.environments }}
       TF_VAR_api_container_image_name: "${{ needs.plan-shared.outputs.registry-name }}.azurecr.io/placeholder"
       TF_VAR_container_registry_resource_group: ${{ needs.plan-shared.outputs.resource-group-name }}
       TF_VAR_entra_id_client_secret: ${{ secrets.ENTRA_ID_CLIENT_SECRET }}

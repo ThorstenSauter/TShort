@@ -116,15 +116,16 @@ resource "azurerm_container_app" "api" {
   ]
 }
 
-resource "cloudflare_record" "asuid_api" {
+resource "cloudflare_dns_record" "asuid_api" {
   zone_id = data.cloudflare_zone.main.zone_id
   name    = local.api_custom_domain_is_apex ? "asuid" : "asuid.${var.api_custom_domain}"
   type    = "TXT"
   content = azurerm_container_app.api.custom_domain_verification_id
+  ttl     = 1
   comment = "Azure custom domain verification id"
 }
 
-resource "cloudflare_record" "api" {
+resource "cloudflare_dns_record" "api" {
   zone_id = data.cloudflare_zone.main.zone_id
   name    = local.api_custom_domain_is_apex ? var.dns_zone : var.api_custom_domain
   type    = local.api_custom_domain_is_apex ? "A" : "CNAME"
@@ -133,14 +134,15 @@ resource "cloudflare_record" "api" {
     ? azurerm_container_app_environment.main.static_ip_address
     : azurerm_container_app.api.ingress.0.fqdn
   )
+  ttl     = 1
   comment = "Custom domain for the ${local.app_name} API ${var.env} environment"
 }
 
 resource "time_sleep" "api_custom_domain_records" {
   create_duration = "2m"
   triggers = {
-    record           = "${cloudflare_record.api.name}.${var.dns_zone}"
-    verification_id  = cloudflare_record.asuid_api.content
+    record           = "${cloudflare_dns_record.api.name}.${var.dns_zone}"
+    verification_id  = cloudflare_dns_record.asuid_api.content
     container_app_id = azurerm_container_app.api.id
   }
 }

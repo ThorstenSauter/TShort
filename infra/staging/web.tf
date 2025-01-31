@@ -10,20 +10,28 @@ resource "azurerm_static_web_app" "main" {
   sku_size            = "Free"
   sku_tier            = "Free"
   tags                = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      repository_branch,
+      repository_url
+    ]
+  }
 }
 
-resource "cloudflare_record" "primary" {
-  zone_id = data.cloudflare_zone.main.id
+resource "cloudflare_dns_record" "primary" {
+  zone_id = data.cloudflare_zone.main.zone_id
   name    = var.primary_web_custom_domain
   type    = "CNAME"
   content = azurerm_static_web_app.main.default_host_name
+  ttl     = 1
   comment = "Primary domain for TShort ${var.env} Azure Static Web App"
 }
 
 resource "time_sleep" "wait_for_dns_record" {
   create_duration = "2m"
   triggers = {
-    record = "${cloudflare_record.primary.name}.${var.dns_zone}"
+    record = "${cloudflare_dns_record.primary.name}.${var.dns_zone}"
   }
 }
 

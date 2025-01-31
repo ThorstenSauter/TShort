@@ -2,8 +2,12 @@ data "azuread_client_config" "current" {}
 
 data "azurerm_client_config" "current" {}
 
-data "cloudflare_zone" "main" {
+data "cloudflare_zones" "search" {
   name = var.dns_zone
+}
+
+data "cloudflare_zone" "main" {
+  zone_id = data.cloudflare_zones.search.result[0].id
 }
 
 locals {

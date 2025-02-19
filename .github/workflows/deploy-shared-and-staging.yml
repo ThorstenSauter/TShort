@@ -115,7 +115,7 @@ jobs:
       MIGRATION_BUNDLE_NAME: 'apply-migrations'
       OUTPUT_DIR: 'publish'
       PROJECT_PATH: 'src/TShort.Api/TShort.Api.csproj'
-      TF_VAR_api_container_image_name: ${{ needs.build.outputs.image-details }}
+      TF_VAR_api_container_image_name: ${{ needs.build.outputs.image-name }}
       TF_VAR_container_registry_resource_group: ${{ needs.apply-shared.outputs.resource-group-name }}
       TF_VAR_entra_id_client_secret: ${{ secrets.ENTRA_ID_CLIENT_SECRET }}
     steps:

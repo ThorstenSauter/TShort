@@ -87,6 +87,7 @@ jobs:
         id: image-details
         run: |
           name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ vars.API_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker pull $name
           digest=$(docker inspect $name | jq -r .[0].Id)
           echo "image-name=$name" >> "$GITHUB_OUTPUT"
           echo "image-digest=$digest" >> "$GITHUB_OUTPUT"

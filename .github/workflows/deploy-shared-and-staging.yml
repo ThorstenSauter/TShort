@@ -48,8 +48,10 @@ jobs:
     name: Build container image
     runs-on: ubuntu-latest
     environment: staging
+    permissions:
+      attestations: write
     outputs:
-      image-name: ${{ steps.image-name.outputs.image-name }}
+      image-name: ${{ steps.image-details.outputs.image-name }}
     needs:
       - apply-shared
     env:
@@ -82,9 +84,19 @@ jobs:
           -p:ContainerRegistry=${{ env.REGISTRY_NAME }}.azurecr.io \
           -p:ContainerImageTag=${{ github.sha }} \
           ${{ env.PROJECT_PATH }}
-      - name: Output image name
-        id: image-name
-        run: echo "image-name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ vars.API_IMAGE_NAME }}:${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
+      - name: Output image details
+        id: image-details
+        run: |
+          name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ vars.API_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          digest=$(docker inspect $name | jq -r .[0].Id)
+          echo "image-name=$name" >> "$GITHUB_OUTPUT"
+          echo "image-digest=$digest" >> "$GITHUB_OUTPUT"
+      - name: Generate container image attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.REGISTRY_NAME }}.azurecr.io/${{ vars.API_IMAGE_NAME }}
+          subject-digest: ${{ steps.image-details.outputs.image-digest }}
+          push-to-registry: true
 
   migration-bundle:
     name: Build and apply database migration bundle
@@ -103,7 +115,7 @@ jobs:
       MIGRATION_BUNDLE_NAME: 'apply-migrations'
       OUTPUT_DIR: 'publish'
       PROJECT_PATH: 'src/TShort.Api/TShort.Api.csproj'
-      TF_VAR_api_container_image_name: ${{ needs.build.outputs.image-name }}
+      TF_VAR_api_container_image_name: ${{ needs.build.outputs.image-details }}
       TF_VAR_container_registry_resource_group: ${{ needs.apply-shared.outputs.resource-group-name }}
       TF_VAR_entra_id_client_secret: ${{ secrets.ENTRA_ID_CLIENT_SECRET }}
     steps:

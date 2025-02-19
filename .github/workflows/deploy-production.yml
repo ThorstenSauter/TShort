@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  attestations: write
   contents: read
   id-token: write
 
@@ -51,8 +52,6 @@ jobs:
     name: Build container image
     runs-on: ubuntu-latest
     environment: staging
-    permissions:
-      attestations: write
     outputs:
       image-name: ${{ steps.image-details.outputs.image-name }}
     needs:

@@ -92,7 +92,7 @@ jobs:
         run: |
           name=${{ env.REGISTRY_NAME }}.azurecr.io/${{ vars.API_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           docker pull $name
-          digest=$(docker inspect $name | jq -r .[0].Id)
+          digest=$(docker inspect --format='{{index .RepoDigests 0}}' $name | awk -F'@' '{print $2}')
           echo "image-name=$name" >> "$GITHUB_OUTPUT"
           echo "image-digest=$digest" >> "$GITHUB_OUTPUT"
       - name: Generate container image attestation

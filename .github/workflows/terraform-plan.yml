@@ -69,6 +69,7 @@ jobs:
     strategy:
       matrix:
         environments: [production, staging]
+      fail-fast: false
     environment: ${{ matrix.environments }}
     needs:
       - plan-shared

@@ -1,0 +1,32 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig"/>
+    <File Path=".gitattributes"/>
+    <File Path=".github/renovate.json"/>
+    <File Path=".gitignore"/>
+    <File Path="Directory.Build.props"/>
+    <File Path="Directory.Packages.props"/>
+    <File Path="global.json"/>
+    <File Path="LICENSE.txt"/>
+    <File Path="nuget.config"/>
+    <File Path="README.md"/>
+  </Folder>
+  <Folder Name="/Solution Items/github-actions/">
+    <File Path=".github/workflows/build.yml"/>
+    <File Path=".github/workflows/deploy-production.yml"/>
+    <File Path=".github/workflows/deploy-shared-and-staging.yml"/>
+    <File Path=".github/workflows/terraform-plan.yml"/>
+  </Folder>
+  <Folder Name="/src/">
+    <File Path="src/Directory.Build.props"/>
+    <Project Path="src/TShort.Api/TShort.Api.csproj"/>
+    <Project Path="src/TShort.AppHost/TShort.AppHost.csproj"/>
+    <Project Path="src/TShort.Contracts/TShort.Contracts.csproj"/>
+    <Project Path="src/TShort.ServiceDefaults/TShort.ServiceDefaults.csproj"/>
+    <Project Path="src/TShort.Web/TShort.Web.csproj"/>
+  </Folder>
+  <Folder Name="/tests/">
+    <File Path="tests/Directory.Build.props"/>
+    <Project Path="tests/TShort.Api.Tests.Integration/TShort.Api.Tests.Integration.csproj"/>
+  </Folder>
+</Solution>

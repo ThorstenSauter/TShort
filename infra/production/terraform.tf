@@ -7,15 +7,15 @@ terraform {
     }
     azuread = {
       source  = "hashicorp/azuread"
-      version = "~> 3.1.0"
+      version = "~> 3.2.0"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.23.0"
+      version = "~> 4.24.0"
     }
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 5.1.0"
+      version = "~> 5.2.0"
     }
     time = {
       source  = "hashicorp/time"

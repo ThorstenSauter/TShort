@@ -74,7 +74,7 @@ resource "azapi_resource" "sql_database" {
       name     = "GP_S_Gen5"
       tier     = "GeneralPurpose"
       family   = "Gen5"
-      capacity = 2
+      capacity = 1
     }
   }
 

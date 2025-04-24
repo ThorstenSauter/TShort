@@ -5,7 +5,7 @@
     <NuGetAuditLevel>low</NuGetAuditLevel>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Alba" Version="8.1.1"/>
+    <PackageVersion Include="Alba" Version="8.2.0"/>
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.2.0"/>
     <PackageVersion Include="Aspire.Hosting.SqlServer" Version="9.2.0"/>
     <PackageVersion Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="9.2.0"/>

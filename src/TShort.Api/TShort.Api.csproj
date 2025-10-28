@@ -6,36 +6,37 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer"/>
-    <PackageReference Include="FastEndpoints"/>
-    <PackageReference Include="FastEndpoints.AspVersioning"/>
+    <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="FastEndpoints" />
+    <PackageReference Include="FastEndpoints.AspVersioning" />
     <PackageReference Include="FastEndpoints.Generator">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="FluentResults"/>
+    <PackageReference Include="FluentResults" />
+    <PackageReference Include="Microsoft.Build.Tasks.Core" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer"/>
-    <PackageReference Include="Microsoft.Identity.Web"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.Identity.Web" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TShort.Contracts\TShort.Contracts.csproj"/>
-    <ProjectReference Include="..\TShort.ServiceDefaults\TShort.ServiceDefaults.csproj"/>
+    <ProjectReference Include="..\TShort.Contracts\TShort.Contracts.csproj" />
+    <ProjectReference Include="..\TShort.ServiceDefaults\TShort.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="FluentResults"/>
+    <Using Include="FluentResults" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Summaries\V1\"/>
+    <Folder Include="Summaries\V1\" />
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="TShort.Api.Tests.Integration"/>
+    <InternalsVisibleTo Include="TShort.Api.Tests.Integration" />
   </ItemGroup>
 </Project>

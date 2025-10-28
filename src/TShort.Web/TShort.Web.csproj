@@ -1,20 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly"/>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all"/>
-    <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal"/>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" />
   </ItemGroup>
 
   <ItemGroup>
-    <TrimmerRootAssembly Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication"/>
+    <TrimmerRootAssembly Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" />
     <!--    <TrimmerRootAssembly Include="Microsoft.Graph"/>-->
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TShort.Contracts\TShort.Contracts.csproj"/>
+    <ProjectReference Include="..\TShort.Contracts\TShort.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\staticwebapp.config.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always"/>
+    <Content Update="wwwroot\staticwebapp.config.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
   </ItemGroup>
 </Project>

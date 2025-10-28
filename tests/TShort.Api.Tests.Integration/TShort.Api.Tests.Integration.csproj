@@ -4,16 +4,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Alba"/>
-    <PackageReference Include="Respawn"/>
-    <PackageReference Include="Testcontainers.MsSql"/>
+    <PackageReference Include="Alba" />
+    <PackageReference Include="Respawn" />
+    <PackageReference Include="Testcontainers.MsSql" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\TShort.Api\TShort.Api.csproj"/>
+    <ProjectReference Include="..\..\src\TShort.Api\TShort.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Alba"/>
+    <Using Include="Alba" />
   </ItemGroup>
 </Project>

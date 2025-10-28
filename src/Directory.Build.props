@@ -1,5 +1,5 @@
 <Project>
-  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))"/>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
   <PropertyGroup>
     <AnalysisLevel>latest-All</AnalysisLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -18,8 +18,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all"
-                      Condition="$(MSBuildProjectExtension) == '.csproj'"/>
+                      Condition="$(MSBuildProjectExtension) == '.csproj'" />
     <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all"
-                      Condition="$(MSBuildProjectExtension) == '.csproj'"/>
+                      Condition="$(MSBuildProjectExtension) == '.csproj'" />
   </ItemGroup>
 </Project>

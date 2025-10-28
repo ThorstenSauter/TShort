@@ -2,6 +2,7 @@
   Title: Bad Request,
   Instance: /api/redirects/google,
   TraceId: {Scrubbed},
+  Detail: Invalid redirect URI - this service only accepts HTTPS URIs,
   Errors: [
     {
       Name: redirectTo,

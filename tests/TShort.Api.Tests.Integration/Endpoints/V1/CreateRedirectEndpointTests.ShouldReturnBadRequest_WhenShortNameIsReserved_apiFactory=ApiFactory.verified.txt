@@ -2,6 +2,7 @@
   Title: Bad Request,
   Instance: /api/redirects,
   TraceId: {Scrubbed},
+  Detail: The short name is reserved,
   Errors: [
     {
       Name: shortName,

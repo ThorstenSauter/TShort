@@ -10,7 +10,7 @@
     <PackageVersion Include="Aspire.Hosting.SqlServer" Version="13.0.0" />
     <PackageVersion Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="13.0.0" />
     <PackageVersion Include="Azure.Identity" Version="1.17.0" />
-    <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.3.0" />
+    <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
     <PackageVersion Include="Bogus" Version="35.6.5" />
     <PackageVersion Include="FastEndpoints" Version="7.1.1" />
     <PackageVersion Include="FastEndpoints.AspVersioning" Version="7.1.1" />
@@ -40,7 +40,7 @@
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.15.0.120848" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
     <PackageVersion Include="Testcontainers.MsSql" Version="4.8.1" />
-    <PackageVersion Include="TUnit" Version="1.1.10" />
+    <PackageVersion Include="TUnit" Version="1.1.27" />
     <PackageVersion Include="Verify.TUnit" Version="31.7.1" />
   </ItemGroup>
 </Project>

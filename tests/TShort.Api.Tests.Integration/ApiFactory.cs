@@ -42,7 +42,7 @@ public sealed class ApiFactory : IAsyncInitializer, IAsyncDisposable
         _dbConnection = new SqlConnection(connectionString);
         await _dbConnection.OpenAsync();
         _respawner = await Respawner.CreateAsync(
-            connectionString,
+            _dbConnection,
             new RespawnerOptions { DbAdapter = DbAdapter.SqlServer, TablesToIgnore = ["__EFMigrationsHistory"] });
     }
 

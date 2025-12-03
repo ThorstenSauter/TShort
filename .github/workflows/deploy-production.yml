@@ -28,7 +28,7 @@ jobs:
       ARM_USE_OIDC: true
     steps:
       - name: Checkout repository
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Terraform init
         uses: ThorstenSauter/terraform-actions/init@8b37221bd9829209d81ed7c3a1b3f504290f3a77 # v1.4.6
         with:
@@ -62,7 +62,7 @@ jobs:
       REGISTRY_NAME: ${{ needs.shared-terraform-outputs.outputs.registry-name }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Setup .NET
         uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602 # v5.0.1
         with:
@@ -124,7 +124,7 @@ jobs:
       TF_VAR_entra_id_client_secret: ${{ secrets.ENTRA_ID_CLIENT_SECRET }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Terraform init
         uses: ThorstenSauter/terraform-actions/init@8b37221bd9829209d81ed7c3a1b3f504290f3a77 # v1.4.6
         with:
@@ -192,7 +192,7 @@ jobs:
       TF_VAR_entra_id_client_secret: ${{ secrets.ENTRA_ID_CLIENT_SECRET }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Terraform apply
         uses: ThorstenSauter/terraform-actions/apply@8b37221bd9829209d81ed7c3a1b3f504290f3a77 # v1.4.6
         with:
@@ -225,7 +225,7 @@ jobs:
       TF_VAR_entra_id_client_secret: ${{ secrets.ENTRA_ID_CLIENT_SECRET }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Terraform init
         uses: ThorstenSauter/terraform-actions/init@8b37221bd9829209d81ed7c3a1b3f504290f3a77 # v1.4.6
         with:

@@ -40,7 +40,7 @@
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.16.1.129956" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
     <PackageVersion Include="Testcontainers.MsSql" Version="4.9.0" />
-    <PackageVersion Include="TUnit" Version="1.5.33" />
+    <PackageVersion Include="TUnit" Version="1.5.37" />
     <PackageVersion Include="Verify.TUnit" Version="31.8.0" />
   </ItemGroup>
 </Project>
